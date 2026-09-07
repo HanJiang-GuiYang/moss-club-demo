@@ -139,6 +139,7 @@ DeepSeek API
 4. **逻辑阈值兜底**：MAX98357A 与 WS2812 若用 5V 供电，其数据高阈值约 0.7×VDD≈3.5V，略高于 ESP32 的 3.3V。多数可直连工作；若**无声/不亮**，把这两件的电源降到 **3.3V** 即可（音量/亮度略降但信号稳）。
 
 > 📄 完整接线说明（含上电自检清单、易踩坑）见 [`docs/接线方案与端口定义.md`](docs/接线方案与端口定义.md)。
+> 📷 完整接线示意图（按实购硬件绘制，含供电/共地/注意事项）见 [`docs/接线图-ESP32C3-MOSS.png`](docs/接线图-ESP32C3-MOSS.png)。
 
 ---
 
@@ -281,6 +282,7 @@ python server/server.py
 | [`README.md`](README.md) | 本文件：项目入口与汇总 |
 | [`docs/MOSS语音助手方案.md`](docs/MOSS语音助手方案.md) | 完整开发方案（含代码模板、排期、风险） |
 | [`docs/接线方案与端口定义.md`](docs/接线方案与端口定义.md) | 已购硬件接线与 GPIO 映射 |
+| [`docs/接线图-ESP32C3-MOSS.png`](docs/接线图-ESP32C3-MOSS.png) | ESP32-C3 完整接线示意图（信号颜色图例、供电/共地/注意事项） |
 | [`docs/软件接口协议.md`](docs/软件接口协议.md) | ESP32 与电脑端上位机的 HTTP、音频、TTS、安全和联调协议 |
 | [`docs/AI开发提示词-MOSS语音助手项目.md`](docs/AI开发提示词-MOSS语音助手项目.md) | 生成方案的原始提示词（需求背景） |
 | [`firmware/esp32c3/moss_firmware.ino`](firmware/esp32c3/moss_firmware.ino) | ESP32-C3 固件源码 |
