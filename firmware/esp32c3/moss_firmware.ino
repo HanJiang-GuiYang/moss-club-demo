@@ -389,14 +389,22 @@ void playWavFromUrl(const String& url) {
   static uint8_t raw[WAV_CHUNK_BYTES];
   static int16_t stereoSamples[WAV_CHUNK_BYTES * 2];   // 8bit 单声道时最大需要 2 倍
   uint32_t remaining = info.dataSize;
+  // 有些工具或流式接口会写出 data 长度未知（0 或 0xFFFFFFFF）的 WAV，
+  // 这种情况下不依赖 dataSize，改为一直播放到数据流结束。
+  bool unknownLength = (info.dataSize == 0 || info.dataSize == 0xFFFFFFFF);
+  if (unknownLength) {
+    Serial.println("[WAV] data 块长度未知，按数据流结束判断播放长度");
+  }
   uint32_t totalWritten = 0;
   uint16_t failures = 0;
   esp_err_t lastErr = ESP_OK;
   unsigned long tStart = millis();
   bool unsupported = false;
 
-  while (remaining > 0 && failures < 4) {
-    size_t want = (remaining < sizeof(raw)) ? (size_t)remaining : sizeof(raw);
+  while ((unknownLength || remaining > 0) && failures < 4) {
+    size_t want = unknownLength
+                    ? sizeof(raw)
+                    : ((remaining < sizeof(raw)) ? (size_t)remaining : sizeof(raw));
     size_t got = readUpTo(stream, raw, want);
     if (got == 0) break;
 
@@ -404,7 +412,7 @@ void playWavFromUrl(const String& url) {
     size_t frameBytes = (info.bits / 8) * info.channels;
     got -= got % frameBytes;
     if (got == 0) break;
-    remaining -= got;
+    if (!unknownLength) remaining -= got;
 
     size_t len = wavToStereo16(raw, got, info, stereoSamples,
                                sizeof(stereoSamples) / sizeof(stereoSamples[0]));
