@@ -146,7 +146,10 @@ DeepSeek API
 
 - 开发环境：**Arduino IDE 2.x** + `esp32 by Espressif Systems`，板卡选 `ESP32C3 Dev Module`，库：`ArduinoJson`、`Adafruit NeoPixel`。
 - 功能：Wi-Fi 连接 → 按钮触发 4 秒录音 → I2S 采 16kHz PCM → HTTP 上传 → 接收 JSON → 下载 WAV 播放 → LED 状态。
+- WAV 播放：按 RIFF 结构逐块解析 `fmt `/`data`，**按 WAV 实际采样率/声道/位深播放**（单声道自动复制成左右声道，8bit 自动转 16bit），不再假设固定 44 字节头；解析参数与写入字节数会打印到串口，便于联调核对。
+- 喇叭自检：开机播放 300ms 提示音（`SPEAKER_BEEP_ON_BOOT`，**不需要联网**即可验证 MAX98357A + 喇叭通路），串口发送 `T` 可随时重播 1kHz 测试音。
 - 源码：见 [`firmware/esp32c3/moss_firmware.ino`](firmware/esp32c3/moss_firmware.ino)。
+- 硬件自检程序：见 [`firmware/tests/speaker_test/speaker_test.ino`](firmware/tests/speaker_test/speaker_test.ino)（喇叭/功放单音、扫频、旋律、采样率与音量测试，逐项打印返回值，无需第三方库）。
 - 说明：ESP32-C3 只有 1 个 I2S0，录音/播放共用 BCLK/WS，切换到不同数据 GPIO（GPIO6 进 / GPIO7 出）。
 
 ---
@@ -284,6 +287,7 @@ python server/server.py
 | [`docs/软件接口协议.md`](docs/软件接口协议.md) | ESP32 与电脑端上位机的 HTTP、音频、TTS、安全和联调协议 |
 | [`docs/AI开发提示词-MOSS语音助手项目.md`](docs/AI开发提示词-MOSS语音助手项目.md) | 生成方案的原始提示词（需求背景） |
 | [`firmware/esp32c3/moss_firmware.ino`](firmware/esp32c3/moss_firmware.ino) | ESP32-C3 固件源码 |
+| [`firmware/tests/speaker_test/speaker_test.ino`](firmware/tests/speaker_test/speaker_test.ino) | 喇叭/功放自检程序（单音、扫频、旋律、采样率、音量，打印返回值） |
 | [`server/server.py`](server/server.py) | 电脑端上位机源码 |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | 多人协作规范 |
 | [`AGENTS.md`](AGENTS.md) | 给其他 AI Agent 的协作 / GitHub 推送 / 文档管理约定 |
